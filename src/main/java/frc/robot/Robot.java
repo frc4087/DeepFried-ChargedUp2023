@@ -28,6 +28,9 @@ public class Robot extends TimedRobot {
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
 
+    m_robotContainer.roboInit();
+
+
   }
 
   /**
@@ -48,7 +51,9 @@ public class Robot extends TimedRobot {
 
   /** This function is called once each time the robot enters Disabled mode. */
   @Override
-  public void disabledInit() {}
+  public void disabledInit() {
+    m_robotContainer.disableElevatorPID();
+  }
 
   @Override
   public void disabledPeriodic() {}
@@ -78,6 +83,7 @@ public class Robot extends TimedRobot {
     //   m_autonomousCommand.cancel();
     // }
 
+    m_robotContainer.teleOpInit();
   }
 
   /** This function is called periodically during operator control. */

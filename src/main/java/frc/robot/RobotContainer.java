@@ -5,10 +5,14 @@
 package frc.robot;
 
 import frc.robot.Constants.OperatorConstants;
-import frc.robot.subsystems.ElevatorBase;
+
+import frc.robot.subsystems.ElevatorPID;
+import frc.robot.subsystems.IntakePID;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -30,11 +34,12 @@ public class RobotContainer {
   public final JoystickButton bButton = new JoystickButton(driveJoy,2);
   public final JoystickButton xButton = new JoystickButton(driveJoy, 3);
   public final JoystickButton startButton = new JoystickButton(opJoy,8);
+  public final DigitalInput hallEffect = new DigitalInput(0);
   //public final TrapezoidProfile.Constraints m_Constraints = new TrapezoidProfile.Constraints(1.75, 0.75);
  // public final ProfiledPIDController m_PidController = new ProfiledPIDController(1.3,0.0,0.7, m_Constraints, 0.02);
 
-  public final ElevatorBase m_elevatorBase = new ElevatorBase();
-
+  public final ElevatorPID m_elevatorPID = new ElevatorPID();
+  public final IntakePID m_intakePIDSub = new IntakePID();
 
   public double getDriveJoy(int axis) {
     double raw = driveJoy.getRawAxis(axis);
@@ -59,48 +64,74 @@ public class RobotContainer {
 
   }
 
+  public void roboInit(){
+    
+
+    
+  }
+
+  public void teleOpInit(){
+   // m_elevatorPID.enable();
+   m_elevatorPID.encoderR.setPosition(0);
+  }
+
   public void teleopPeriodic(){
 
-    double setpoint = -40;
+    double setpoint = -20;
+    double raise = Math.PI/4;
+    double lower = Math.PI/6;
 
-    
-    SmartDashboard.putNumber("Encoder Right", m_elevatorBase.encoderR.getPosition());
-    SmartDashboard.putNumber("PID Method",m_elevatorBase.m_PidController.calculate(m_elevatorBase.encoderR.getPosition()));
+    SmartDashboard.putNumber("Encoder Right", m_elevatorPID.encoderR.getPosition());
+    SmartDashboard.putNumber("IntakeRaise Encoder",m_intakePIDSub.intakeEncoder.getPosition());
+   // SmartDashboard.putBoolean("Hall Effect Validity", getHallEffect());
+    //SmartDashboard.putNumber("PID Method",m_elevatorBase.m_PidController.calculate(m_elevatorPID.encoderR.getPosition()));
 
-
-    if(driveJoy.getBButtonPressed()){
-      m_elevatorBase.m_PidController.setGoal(setpoint);
-    }else if(driveJoy.getXButtonPressed()){
-      m_elevatorBase.m_PidController.setGoal(0);
+  
+    if(driveJoy.getBButton()){
+      m_elevatorPID.setGoal(setpoint);
+      m_elevatorPID.enable();
+    }else if(driveJoy.getXButton()){
+      m_elevatorPID.setGoal(0);
+      m_elevatorPID.enable();
     }
 
-    if(driveJoy.getAButton()){
-      m_elevatorBase.encoderR.setPosition(0);
+    if(driveJoy.getYButton()){
+      m_intakePIDSub.setGoal(-raise);
+      m_intakePIDSub.enable();
+    }else if(driveJoy.getAButton()){
+      m_intakePIDSub.setGoal(lower);
+      m_intakePIDSub.enable();
     }
-
-    m_elevatorBase.rightSpark.set(m_elevatorBase.m_PidController.calculate(m_elevatorBase.encoderR.getPosition()));
-    
     // if(driveJoy.getAButton()){
-    //   m_elevatorBase.rightSpark.set(m_elevatorBase.elevatorPID.calculate(m_elevatorBase.encoderR.getPosition(),setpoint)); 
+    //   m_elevatorPID.encoderR.setPosition(0);
     // }
+
+  
+
+   //m_elevatorPID.rightSpark.set(m_elevatorPID.useOutput(setpoint,setpoint));
+
+    
+    
    
 
-  }
-  /**
-   * Use this method to define your trigger->command mappings. Triggers can be created via the
-   * {@link Trigger#Trigger(java.util.function.BooleanSupplier)} constructor with an arbitrary
-   * predicate, or via the named factories in {@link
-   * edu.wpi.first.wpilibj2.command.button.CommandGenericHID}'s subclasses for {@link
-   * CommandXboxController Xbox}/{@link edu.wpi.first.wpilibj2.command.button.CommandPS4Controller
-   * PS4} controllers or {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight
-   * joysticks}.
-   */
- 
+    
+}
 
-  /**
-   * Use this to pass the autonomous command to the main {@link Robot} class.
-   *
-   * @return the command to run in autonomous
-   */
+public void disableElevatorPID(){
+  m_elevatorPID.disable();
+  m_intakePIDSub.disable();
+}
+
+// public boolean getHallEffect(){
+//   return !hallEffect.get();
+// }
+
+// public void resetEncoder(){
+//   if (getHallEffect()){
+//     m_elevatorPID.encoderR.setPosition(0);
+//   }
+
 
 }
+
+

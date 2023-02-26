@@ -11,38 +11,41 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.RobotContainer;
+import edu.wpi.first.wpilibj2.command.ProfiledPIDSubsystem;
 
-public class ElevatorBase extends SubsystemBase {
+public class ElevatorPID extends ProfiledPIDSubsystem {
+
   public final CANSparkMax rightSpark = new CANSparkMax(15,MotorType.kBrushless);
   public final CANSparkMax leftSpark = new CANSparkMax(14, MotorType.kBrushless);
   public final RelativeEncoder encoderR = rightSpark.getEncoder();
   public final RelativeEncoder encoderL = leftSpark.getEncoder();
-  //public final PIDController elevatorPID = new PIDController(0.01, 0, 0);
- public final TrapezoidProfile.Constraints m_Constraints = new TrapezoidProfile.Constraints(200, 200);
- public final ProfiledPIDController m_PidController = new ProfiledPIDController(0.07,0.0,0.0, m_Constraints, 0.02);
-   
- //kP = 0.05
- 
-  /** Creates a new ElevatorBase. */
-  public ElevatorBase() {
-
-    leftSpark.follow(rightSpark, true);
-
-   
-
-   
-
-   
-
+  
+  /** Creates a new ElevatorPID. */
+  public ElevatorPID() {
+    super(
+        // The ProfiledPIDController used by the subsystem
+        new ProfiledPIDController(0.07,0,0,
+            // The motion profile constraints
+        new TrapezoidProfile.Constraints(200, 200)));
+      
     
 
   }
 
   @Override
-  public void periodic() {
-    // This method will be called once per scheduler run
+  public void useOutput(double output, TrapezoidProfile.State setpoint) {
+    rightSpark.set(output);
+    
+  }
+
+  public double getEncoderPos(){
+    return encoderR.getPosition();
+  }
+
+
+  @Override
+  public double getMeasurement() {
+    // Return the process variable measurement here
+    return getEncoderPos();
   }
 }
