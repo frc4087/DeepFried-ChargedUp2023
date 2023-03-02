@@ -6,18 +6,23 @@ package frc.robot.subsystems;
 
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.RelativeEncoder;
+import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.SparkMaxAbsoluteEncoder.Type;
 
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj2.command.ProfiledPIDSubsystem;
 
 public class IntakePID extends ProfiledPIDSubsystem {
   
   public final CANSparkMax intakeRoll = new CANSparkMax(21, MotorType.kBrushless);
   public final CANSparkMax intakeRaise = new CANSparkMax(22,MotorType.kBrushless);
-  public final AbsoluteEncoder intakeEncoder = intakeRaise.getAbsoluteEncoder(Type.kDutyCycle);
+  public final RelativeEncoder intakeEncoder = intakeRaise.getEncoder();
+  public final RelativeEncoder rollEncoder = intakeRoll.getEncoder();
+ 
 
 
   /** Creates a new IntakePID. */
@@ -30,6 +35,11 @@ public class IntakePID extends ProfiledPIDSubsystem {
             0,
             // The motion profile constraints
             new TrapezoidProfile.Constraints(10, 10)));
+
+    intakeRoll.setSmartCurrentLimit(20);
+    intakeRaise.setSmartCurrentLimit(20);
+  //  intakeRoll.setIdleMode(IdleMode.kBrake);
+  //  double sparkEncPos = intakeRoll.setSoftLimit(null, 0);
   }
 
   @Override
