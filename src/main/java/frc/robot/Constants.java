@@ -15,29 +15,28 @@ import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
-  public static final double kEncoderDistancePerPulse = (4 * Math.PI * 2.54 * 9) / (100.0 * 2048 * 64); //gear ratio is 64 to 9
-  public static final double CurrentLimit = 30;
+  public static final double CurrentLimit = 50;
   public static final double secondsForOpenRamp = 0.8;
   public final static int kDriveTimeoutMs = 30,
   kDrivePIDIdx = 0;
 
+  //DriveBase Constants 
   public static final double ksVolts = 0.205,//0.65634, 
-  kvVoltSecondsPerMeter = 2.1,//0.1106, 
-  kaVoltSecondsSquaredPerMeter = 0.217,//0.095387,
-  kTrackwidthMeters = 0.635,
-  kP = 1,//0.17833, 
+  kvVoltSecondsPerMeter = 2.6376,//0.1106, 
+  kaVoltSecondsSquaredPerMeter = 1.15,//0.095387,
+  kTrackwidthMeters = 0.514, //ChargedUp Update
+  kP = -1,//0.17833, 
   kD = 0.0, 
-  kMaxSpeedMetersPerSecond = 4.953,
-  kMaxAccelerationMetersPerSecondSquared = 8.5344,
+  kMaxSpeedMetersPerSecond = 4.6634, //ChargedUp
+  kMaxAccelerationMetersPerSecondSquared = 9,
   kRamseteB = 2, 
   kRamseteZeta = 0.7;
+  
+  public static final double kEncoderDistancePerPulse = (4 * Math.PI * 2.54 * 1) / (100.0 * 2048 * 9.9200); //gear ratio is 9:1
 
+  public static final DifferentialDriveKinematics m_driveKinematics = new DifferentialDriveKinematics(kTrackwidthMeters);
 
-
-public static final DifferentialDriveKinematics m_driveKinematics = new DifferentialDriveKinematics(kTrackwidthMeters);
-
-
-public static final boolean kGyroReversed = false;
+  public static final boolean kGyroReversed = false;
 
 
 

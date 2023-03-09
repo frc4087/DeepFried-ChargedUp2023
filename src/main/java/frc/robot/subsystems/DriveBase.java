@@ -41,20 +41,23 @@ public class DriveBase extends SubsystemBase {
     
   
     public DriveBase() {
+
+      
   
   
-  
+      //Sets leader follower relationship
       _left2.follow(_left1);
       _right2.follow(_right1);
-  
-      _left1.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor,Constants.kDrivePIDIdx,Constants.kDriveTimeoutMs);
-      _right1.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor,Constants.kDrivePIDIdx,Constants.kDriveTimeoutMs);
+
+
   
       //inverts the left motors
      _left1.setInverted(true);    
      _left2.setInverted(true);       
      _right1.setInverted(false);
      _right2.setInverted(false);
+
+     
       
       //sets motor to brake motor
       _right1.setNeutralMode(NeutralMode.Brake);
@@ -62,13 +65,14 @@ public class DriveBase extends SubsystemBase {
       _left1.setNeutralMode(NeutralMode.Brake);
       _left2.setNeutralMode(NeutralMode.Brake);
 
-      _left1.configStatorCurrentLimit(new StatorCurrentLimitConfiguration(true, Constants.CurrentLimit, 25, Constants.secondsForOpenRamp));
-      _left2.configStatorCurrentLimit(new StatorCurrentLimitConfiguration(true, Constants.CurrentLimit, 25, Constants.secondsForOpenRamp));
-      _right1.configStatorCurrentLimit(new StatorCurrentLimitConfiguration(true, Constants.CurrentLimit, 25, Constants.secondsForOpenRamp));
-      _right2.configStatorCurrentLimit(new StatorCurrentLimitConfiguration(true, Constants.CurrentLimit, 25, Constants.secondsForOpenRamp));
-      
+      //gets the encoder values
+      _left1.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor,Constants.kDrivePIDIdx,Constants.kDriveTimeoutMs);
+      _right1.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor,Constants.kDrivePIDIdx,Constants.kDriveTimeoutMs);
+
+    
       m_odometry = new DifferentialDriveOdometry(getHeading(), leftEncPos, rightEncPos);
   
+      //Motor Safety
       _left1.setStatusFramePeriod(1, 10);
       _right1.setStatusFramePeriod(1, 10);
       _left2.setStatusFramePeriod(1, 10);
@@ -93,6 +97,11 @@ public class DriveBase extends SubsystemBase {
       _right1.setStatusFramePeriod(14, 23200*100);;
       _left2.setStatusFramePeriod(14, 23500*100);
       _right2.setStatusFramePeriod(14, 23600*100);
+
+      _left1.configStatorCurrentLimit(new StatorCurrentLimitConfiguration(true, Constants.CurrentLimit, 25, Constants.secondsForOpenRamp));
+      _left2.configStatorCurrentLimit(new StatorCurrentLimitConfiguration(true, Constants.CurrentLimit, 25, Constants.secondsForOpenRamp));
+      _right1.configStatorCurrentLimit(new StatorCurrentLimitConfiguration(true, Constants.CurrentLimit, 25, Constants.secondsForOpenRamp));
+      _right2.configStatorCurrentLimit(new StatorCurrentLimitConfiguration(true, Constants.CurrentLimit, 25, Constants.secondsForOpenRamp));
   
   
   
@@ -102,11 +111,11 @@ public class DriveBase extends SubsystemBase {
   public void periodic() {
 
     leftEncPos = _left1.getSelectedSensorPosition() * Constants.kEncoderDistancePerPulse; 
-      rightEncPos = _right1.getSelectedSensorPosition() * Constants.kEncoderDistancePerPulse;
-      leftEncVel = _left1.getSelectedSensorVelocity() * Constants.kEncoderDistancePerPulse;
-      rightEncVel = _right1.getSelectedSensorVelocity() * Constants.kEncoderDistancePerPulse;
+    rightEncPos = _right1.getSelectedSensorPosition() * Constants.kEncoderDistancePerPulse;
+    leftEncVel = _left1.getSelectedSensorVelocity() * Constants.kEncoderDistancePerPulse;
+    rightEncVel = _right1.getSelectedSensorVelocity() * Constants.kEncoderDistancePerPulse;
       
-      m_odometry.update(getHeading(), leftEncPos, rightEncPos);
+   m_odometry.update(getHeading(), leftEncPos, rightEncPos);
     }
   
     public DifferentialDriveWheelSpeeds getWheelSpeeds() {    
@@ -116,15 +125,18 @@ public class DriveBase extends SubsystemBase {
     public Pose2d getPose() {
       return m_odometry.getPoseMeters();
     }
+
+    public void resetEncoders() {
+      _left1.setSelectedSensorPosition(-0);
+      _left2.setSelectedSensorPosition(-0);
+      _right1.setSelectedSensorPosition(0);
+      _right2.setSelectedSensorPosition(0);
+     
+    }
   
     public void resetOdometry(final Pose2d pose) {
       resetEncoders();
       m_odometry.resetPosition(getHeading(), leftEncPos, rightEncPos, pose);
-    }
-  
-    public void resetEncoders() {
-      leftEncPos = 0;
-      rightEncPos = 0;
     }
   
     public void zeroHeading() {
@@ -147,8 +159,11 @@ public class DriveBase extends SubsystemBase {
   
     public void voltageControl(final double leftVolts, final double rightVolts) {
       _left1.setVoltage(leftVolts); 
-      _right1.setVoltage(rightVolts); //used to be negative
+      _right1.setVoltage(rightVolts); 
       m_drive.feed(); 
+
+      
+      //used to be negative
     }
     // This method will be called once per scheduler run
   }

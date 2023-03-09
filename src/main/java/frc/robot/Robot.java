@@ -27,7 +27,6 @@ public class Robot extends TimedRobot {
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
-
     m_robotContainer.roboInit();
 
     CameraServer.startAutomaticCapture();
@@ -63,6 +62,8 @@ public class Robot extends TimedRobot {
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
+
+    m_robotContainer.autoInit();
     
 
   //   // schedule the autonomous command (example)
@@ -73,25 +74,29 @@ public class Robot extends TimedRobot {
 
   /** This function is called periodically during autonomous. */
   @Override
-  public void autonomousPeriodic() {}
+  public void autonomousPeriodic() {
+    m_robotContainer.autoPeriodic();
+  }
 
   @Override
   public void teleopInit() {
     // This makes sure that the autonomous stops running when
     // teleop starts running. If you want the autonomous to
     // continue until interrupted by another command, remove
-    // this line or comment it out.
+    // this line or comment it out
+    if (m_robotContainer.m_autonomousCommand != null) {
+      m_robotContainer.m_autonomousCommand.cancel();
+    }
     // if (m_autonomousCommand != null) {
     //   m_autonomousCommand.cancel();
     // }
-
-    m_robotContainer.teleOpInit();
+     m_robotContainer.teleOperatedInit();
   }
 
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
-    m_robotContainer.teleopPeriodic();
+    m_robotContainer.teleoperatedPeriodic();
   }
 
   @Override
