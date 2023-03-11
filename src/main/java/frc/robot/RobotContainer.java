@@ -4,11 +4,18 @@
 
 package frc.robot;
 
+import frc.robot.commands.AutoBalance;
+import frc.robot.commands.ConeRelease;
+import frc.robot.commands.ElevatorRaiseTop;
 import frc.robot.commands.IntakeRelease;
-import frc.robot.commands.Preload;
+import frc.robot.commands.IntakeStow;
+import frc.robot.commands.InvertMotors;
+import frc.robot.commands.LowerELevator;
+import frc.robot.commands.LowerIntake;
 import frc.robot.subsystems.DriveBase;
 import frc.robot.subsystems.ElevatorPID;
 import frc.robot.subsystems.IntakeSub;
+import frc.robot.subsystems.autoBalance;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -17,6 +24,7 @@ import org.opencv.core.Point;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.RamseteController;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryUtil;
@@ -29,6 +37,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 
@@ -54,6 +63,7 @@ public class RobotContainer {
   public final ElevatorPID m_elevatorPID = new ElevatorPID();
   public final DriveBase m_DriveBase = new DriveBase();
   public final IntakeSub m_intakeSub = new IntakeSub();
+  public final autoBalance m_autoBalance = new autoBalance();
 
 
   public Trajectory trajectory;
@@ -75,7 +85,7 @@ public class RobotContainer {
   }
   public double getDriveJoyXR() {
     double raw = getDriveJoy(4);
-    return raw;
+    return raw/2;
     //return Math.abs(raw) < 0.1 ? 0.0 : raw > 0 ? (raw * raw) / 1.5 : (-raw * raw) / 1.5;
   }
 
@@ -104,6 +114,13 @@ public class RobotContainer {
     autoChooser.addOption("MobilityPathR","MobilityPathR");
     autoChooser.addOption("Score Preload", "PreloadPath1B");
     autoChooser.addOption("DockPath", "DockPath");
+    autoChooser.addOption("DockPath2","DockPath2");
+    autoChooser.addOption("ConeTopScore","ConeTopScore");
+    autoChooser.addOption("Test","Test");
+    autoChooser.addOption("Test2", "Test2");
+    autoChooser.addOption("AutoBalance+Dock","Dock+AutoBalance");
+    autoChooser.addOption("Cone+Dock", "Cone+Dock");
+    autoChooser.addOption("AutoBalanceBack","AutoBalanceBack");
     SmartDashboard.putData("Auto Routine", autoChooser);
 
 
@@ -115,6 +132,7 @@ public class RobotContainer {
   public void autoInit(){
     m_DriveBase.m_gyro.reset();
     m_DriveBase.resetEncoders();
+    
 
 
 
@@ -126,13 +144,25 @@ public class RobotContainer {
   }
 
   public void autoPeriodic(){
-    m_DriveBase.m_drive.feed();
+
+    // double speed = m_autoBalance.autoBalanceRoutine();
+  
+    SmartDashboard.putNumber("Tilt Val",m_autoBalance.getTilt());
+
+    SmartDashboard.putNumber("Talon Left",m_DriveBase.leftEncPos);
+    SmartDashboard.putNumber("Talon Right",m_DriveBase.rightEncPos);
+    //m_DriveBase.m_drive.feed();
     //m_DriveBase.m_drive.setSafetyEnabled(false);
     
     
 
 
   }
+
+  // public void autoBalanceDrive(){
+  //   double speed = m_DriveBase.scoreAndBalance();
+  //   m_DriveBase.m_drive.arcadeDrive(speed,0);
+  // }
 
   public void teleOperatedInit(){
     m_DriveBase.resetEncoders();
@@ -148,8 +178,7 @@ public class RobotContainer {
 
 
     SmartDashboard.putNumber("Encoder Right", m_elevatorPID.encoderR.getPosition());
-    SmartDashboard.putNumber("Talon Left",m_DriveBase.leftEncPos);
-    SmartDashboard.putNumber("Talon Right",m_DriveBase.rightEncPos);
+   
 
   //Driving Junk
     if (driveJoy.getBButtonPressed()){
@@ -157,10 +186,10 @@ public class RobotContainer {
     }
 
     if (BButtonToggle) {
-      m_DriveBase.m_drive.curvatureDrive(getDriveJoyYL(), -getDriveJoyXR(), true);
+      m_DriveBase.m_drive.curvatureDrive(-getDriveJoyYL(), -getDriveJoyXR(), true);
       SmartDashboard.putString("Drivetype", "curvature");
     } else {
-      m_DriveBase.m_drive.arcadeDrive(getDriveJoyYL(), -getDriveJoyXR());
+      m_DriveBase.m_drive.arcadeDrive(-getDriveJoyYL(), -getDriveJoyXR());
       SmartDashboard.putString("Drivetype", "arcade");
     }
 
@@ -187,7 +216,7 @@ public class RobotContainer {
       m_intakeSub.intakeRoll.set(1);
       lastHeld = CONE;
     }else if(opJoy.getLeftBumper()){
-      m_intakeSub.intakeRoll.set(-1);
+      m_intakeSub.intakeRoll.set(-0.6);
       lastHeld = CUBE;
     }else if(lastHeld == CONE){
       m_intakeSub.intakeRoll.set(0.2);
@@ -197,6 +226,8 @@ public class RobotContainer {
       m_intakeSub.intakeRoll.set(0);
     }
 
+  
+
     if(opJoy.getBackButton()){
       m_intakeSub.intakeRaise.set(0.2);
     }else if(opJoy.getStartButton()){
@@ -204,6 +235,8 @@ public class RobotContainer {
     }
 
     }
+
+
 
   
 
@@ -230,6 +263,38 @@ public Command getAutonomousCommand(String path) {
     .alongWith(pathFollow("output/PreloadPath1B.wpilib.json",false));
   case "DockPath":
     return pathFollow("output/DockPath.wpilib.json",false);
+  case "DockPath2":
+    return pathFollow("output/DockPath2.wpilib.json",false);
+  case "ConeTopScore":
+    return new ParallelRaceGroup(new ElevatorRaiseTop(), new WaitCommand(2))
+      .andThen(new ParallelRaceGroup(new LowerIntake(), new WaitCommand (2)))
+      .andThen(new ParallelRaceGroup(new ConeRelease(), new WaitCommand(0.5)))
+      .andThen(new ParallelRaceGroup(new IntakeStow(), new WaitCommand(3)))
+      .andThen(new ParallelRaceGroup(new LowerELevator(), new WaitCommand(3)))
+      .andThen(pathFollow("output/CubeReturn.wpilib.json",false));
+  case " PickUpCube + Score":
+    return pathFollow("output/CubePickUp.wpilib.json",false)
+    .alongWith(new LowerIntake())
+    .andThen(new WaitCommand(0.3))
+    .andThen(pathFollow("output/CubeReturn.wpilib.json", true));
+  case "AutoBalance":
+    return (new AutoBalance());
+  case "Dock+AutoBalance":
+    return pathFollow("output/DockPath2.wpilib.json", false)
+    .andThen(new AutoBalance());
+  case "Test":
+    return pathFollow("output/Test.wpilib.json",false);
+  case "Test2":
+    return pathFollow("output/Test2.wpilib.json",false);
+  case "AutoBalanceBack":
+    return (new AutoBalance());
+  case "Cone+Dock":
+  return new ParallelRaceGroup(new ElevatorRaiseTop(), new WaitCommand(2))
+  .andThen(new ParallelRaceGroup(new LowerIntake(), new WaitCommand (2)))
+  .andThen(new ParallelRaceGroup(new ConeRelease(), new WaitCommand(0.5)))
+  .andThen(new ParallelRaceGroup(new IntakeStow(), new WaitCommand(3)))
+  .andThen(new ParallelRaceGroup(new LowerELevator(), new WaitCommand(3)))
+  .andThen(new AutoBalance());
   }
 
 
@@ -258,8 +323,8 @@ public Command pathFollow(String trajectoryJSON, boolean multiPath){
                                                                              Constants.kaVoltSecondsSquaredPerMeter),
                                                   Constants.m_driveKinematics,
                                                   m_DriveBase::getWheelSpeeds,
-                                                  new PIDController(Constants.kP, 0, 0),
-                                                  new PIDController(Constants.kP, 0, 0),
+                                                  new PIDController(1, 0, 0),
+                                                  new PIDController(1, 0, 0),
                                                   m_DriveBase::voltageControl,
                                                   m_DriveBase);
   

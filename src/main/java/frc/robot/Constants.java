@@ -16,19 +16,19 @@ import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
  */
 public final class Constants {
   public static final double CurrentLimit = 50;
-  public static final double secondsForOpenRamp = 0.8;
+  public static final double secondsForOpenRamp = 1; //0.8
   public final static int kDriveTimeoutMs = 30,
   kDrivePIDIdx = 0;
 
   //DriveBase Constants 
-  public static final double ksVolts = 0.205,//0.65634, 
-  kvVoltSecondsPerMeter = 2.6376,//0.1106, 
-  kaVoltSecondsSquaredPerMeter = 1.15,//0.095387,
+  public static final double ksVolts = 0.18531,//0.65634, 
+  kvVoltSecondsPerMeter = 1.0502, //2.6376,  //0.1106, 
+  kaVoltSecondsSquaredPerMeter = 0.13501,//1.15 //0.095387,
   kTrackwidthMeters = 0.514, //ChargedUp Update
-  kP = -1,//0.17833, 
+  kP = 1,//0.17833, 
   kD = 0.0, 
   kMaxSpeedMetersPerSecond = 4.6634, //ChargedUp
-  kMaxAccelerationMetersPerSecondSquared = 9,
+  kMaxAccelerationMetersPerSecondSquared = 5,
   kRamseteB = 2, 
   kRamseteZeta = 0.7;
   

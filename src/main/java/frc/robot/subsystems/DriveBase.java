@@ -20,10 +20,10 @@ import frc.robot.Constants;
 
 public class DriveBase extends SubsystemBase {
 
-  public WPI_TalonFX _left1 = new WPI_TalonFX(0);
-  public WPI_TalonFX _right1 = new WPI_TalonFX(2);
-  public WPI_TalonFX _left2 = new WPI_TalonFX(1);
-  public WPI_TalonFX _right2 = new WPI_TalonFX(3);
+  public WPI_TalonFX _left1 = new WPI_TalonFX(2);
+  public WPI_TalonFX _right1 = new WPI_TalonFX(0);
+  public WPI_TalonFX _left2 = new WPI_TalonFX(3);
+  public WPI_TalonFX _right2 = new WPI_TalonFX(1);
 
 
   public double leftEncPos;
@@ -36,14 +36,35 @@ public class DriveBase extends SubsystemBase {
   public WPI_Pigeon2 m_gyro = new WPI_Pigeon2(0);
     
   public DifferentialDriveOdometry m_odometry;
+
+  public double robotSpeedFast = 0.4,
+                robotSpeedSlow = 0.2,
+                onChargeStationDegree = 13.0,
+                levelDegree = 6.0,
+                debounceTime = 1, //0.2
+                singleTapTime = 0.4, //0.4
+                scoringBackUpTIme = 0.2,
+                doubleTapTime = 0.3,
+                scoringBackUpTime;
+
+  public int debounceCount = 0,
+                state = 0;
+
+
+
+
+
+
+
+
+
   /** Creates a new DriveBase. */
 
     
   
     public DriveBase() {
 
-      
-  
+
   
       //Sets leader follower relationship
       _left2.follow(_left1);
@@ -146,13 +167,15 @@ public class DriveBase extends SubsystemBase {
     public Rotation2d getHeading() {
       return m_gyro.getRotation2d();
     }
-    public double getOtherHeading(){
+    public double getPitch(){
       return m_gyro.getPitch();
     }
   
-    public double getAnotherHeading(){
+    public double getRoll(){
       return m_gyro.getRoll();
       }
+    
+
     // public double getHeadingActual() {
     //   return -m_gyro.getYaw() + Math.toDegrees(initTheta());
     // }`

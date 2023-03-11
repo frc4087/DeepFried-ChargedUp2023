@@ -7,9 +7,9 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Robot;
 
-public class Preload extends CommandBase {
-  /** Creates a new Preload. */
-  public Preload() {
+public class ElevatorRaiseMid extends CommandBase {
+  /** Creates a new ElevatorRaiseMid. */
+  public ElevatorRaiseMid() {
     // Use addRequirements() here to declare subsystem dependencies.
   }
 
@@ -20,14 +20,13 @@ public class Preload extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    Robot.m_robotContainer.m_intakeSub.intakeRaise.set(-0.2);
-
+    Robot.m_robotContainer.m_elevatorPID.setGoal(-20);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    Robot.m_robotContainer.m_intakeSub.intakeRaise.set(0);
+    Robot.m_robotContainer.m_elevatorPID.setGoal(-20);
   }
 
   // Returns true when the command should end.
