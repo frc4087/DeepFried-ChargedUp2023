@@ -8,11 +8,11 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Robot;
 import frc.robot.subsystems.autoBalance;
 
-public class AutoBalance extends CommandBase {
+public class AutoBalanceB extends CommandBase {
   public final autoBalance autoBalanceCommand;
 
   /** Creates a new AutoBalance. */
-  public AutoBalance() {
+  public AutoBalanceB() {
     // Use addRequirements() here to declare subsystem dependencies.
    autoBalanceCommand = new autoBalance();
   }

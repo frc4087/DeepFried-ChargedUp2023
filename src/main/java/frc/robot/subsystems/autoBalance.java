@@ -16,6 +16,7 @@ public class autoBalance {
     private double onChargeStationDegree;
     private double levelDegree;
     private double debounceTime;
+    private double debounceTimeF;
     private double singleTapTime;
     private double scoringBackUpTime;
     private double doubleTapTime;
@@ -48,7 +49,8 @@ public class autoBalance {
         // seconds
         // Reduces the impact of sensor noice, but too high can make the auto run
         // slower, default = 0.2
-        debounceTime = 2;
+        debounceTime = 2.25;//increase this
+        debounceTimeF= 0.1;
 
         // Amount of time to drive towards to scoring target when trying to bump the
         // game piece off
@@ -111,6 +113,7 @@ public class autoBalance {
                     debounceCount++;
                 }
                 if (debounceCount > secondsToTicks(debounceTime)) {
+    
                     state = 2;
                     debounceCount = 0;
                     return 0;
@@ -127,7 +130,57 @@ public class autoBalance {
                     return 0;
                 }
                 if (getTilt() >= levelDegree) {
-                    return 0.1;
+                    return -0.1; //add neg
+                } else if (getTilt() <= -levelDegree) {
+                    return -0.1;
+                }
+            case 3:
+                return 0;
+        }
+        return 0;
+    }
+
+    public boolean checkBalance() {
+
+        return false;
+    }
+
+    public double autoBalanceRoutineForward() {
+        switch (state) {
+            // drive forwards to approach station, exit when tilt is detected
+            case 0:
+                if (getTilt() > onChargeStationDegree) {
+                    debounceCount++;
+                }
+                if (debounceCount > secondsToTicks(debounceTimeF)) {
+                    state = 1;
+                    debounceCount = 0;
+                    return robotSpeedSlow;
+                }
+                return robotSpeedFast;
+            // driving up charge station, drive slower, stopping when level
+            case 1:
+                if (getTilt() < levelDegree) {
+                    debounceCount++;
+                }
+                if (debounceCount > secondsToTicks(debounceTimeF)) {
+                    state = 2;
+                    debounceCount = 0;
+                    return 0;
+                }
+                return robotSpeedSlow;
+            // on charge station, stop motors and wait for end of auto
+            case 2:
+                if (Math.abs(getTilt()) <= levelDegree / 2) {
+                    debounceCount++;
+                }
+                if (debounceCount > secondsToTicks(debounceTimeF)) {
+                    state = 4;
+                    debounceCount = 0;
+                    return 0;
+                }
+                if (getTilt() >= levelDegree) {
+                    return 0.1; 
                 } else if (getTilt() <= -levelDegree) {
                     return -0.1;
                 }
