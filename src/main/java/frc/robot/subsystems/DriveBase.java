@@ -50,36 +50,19 @@ public class DriveBase extends SubsystemBase {
   public int debounceCount = 0,
                 state = 0;
 
-
-
-
-
-
-
-
-
   /** Creates a new DriveBase. */
-
-    
-  
     public DriveBase() {
-
-
-  
+      
       //Sets leader follower relationship
       _left2.follow(_left1);
       _right2.follow(_right1);
-
-
-  
+      
       //inverts the left motors
      _left1.setInverted(true);    
      _left2.setInverted(true);       
      _right1.setInverted(false);
      _right2.setInverted(false);
 
-     
-      
       //sets motor to brake motor
       _right1.setNeutralMode(NeutralMode.Brake);
       _right2.setNeutralMode(NeutralMode.Brake);
@@ -90,7 +73,6 @@ public class DriveBase extends SubsystemBase {
       _left1.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor,Constants.kDrivePIDIdx,Constants.kDriveTimeoutMs);
       _right1.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor,Constants.kDrivePIDIdx,Constants.kDriveTimeoutMs);
 
-    
       m_odometry = new DifferentialDriveOdometry(getHeading(), leftEncPos, rightEncPos);
   
       //Motor Safety
@@ -123,9 +105,6 @@ public class DriveBase extends SubsystemBase {
       _left2.configStatorCurrentLimit(new StatorCurrentLimitConfiguration(true, Constants.CurrentLimit, 25, Constants.secondsForOpenRamp));
       _right1.configStatorCurrentLimit(new StatorCurrentLimitConfiguration(true, Constants.CurrentLimit, 25, Constants.secondsForOpenRamp));
       _right2.configStatorCurrentLimit(new StatorCurrentLimitConfiguration(true, Constants.CurrentLimit, 25, Constants.secondsForOpenRamp));
-  
-  
-  
     }
 
   @Override
@@ -174,21 +153,12 @@ public class DriveBase extends SubsystemBase {
     public double getRoll(){
       return m_gyro.getRoll();
       }
-    
-
-    // public double getHeadingActual() {
-    //   return -m_gyro.getYaw() + Math.toDegrees(initTheta());
-    // }`
   
     public void voltageControl(final double leftVolts, final double rightVolts) {
       _left1.setVoltage(leftVolts); 
       _right1.setVoltage(rightVolts); 
       m_drive.feed(); 
-
-      
-      //used to be negative
     }
-    // This method will be called once per scheduler run
   }
   
 
