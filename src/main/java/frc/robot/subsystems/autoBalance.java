@@ -65,12 +65,13 @@ public class autoBalance {
         doubleTapTime = 0.3;
 
     }
-
+    //gets pitch based on the acceleration of the bot
     public double getPitch() {
         return Math.atan2((-mRioAccel.getX()),
                 Math.sqrt(mRioAccel.getY() * mRioAccel.getY() + mRioAccel.getZ() * mRioAccel.getZ())) * 57.3;
     }
-
+    
+    //gets roll based on the acceleration of the bot
     public double getRoll() {
         return Math.atan2(mRioAccel.getY(), mRioAccel.getZ()) * 57.3;
     }
@@ -138,11 +139,6 @@ public class autoBalance {
                 return 0;
         }
         return 0;
-    }
-
-    public boolean checkBalance() {
-
-        return false;
     }
 
     public double autoBalanceRoutineForward() {
