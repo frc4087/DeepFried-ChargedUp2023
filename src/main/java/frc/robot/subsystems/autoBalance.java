@@ -9,7 +9,7 @@ import edu.wpi.first.wpilibj.BuiltInAccelerometer;
 /** Add your docs here. */
 public class autoBalance {
     private BuiltInAccelerometer mRioAccel;
-    private int state;
+    private int state; //used to determine if the robot is driving towards the charging station, balancing itself, or waiting for the automation period to end
     private int debounceCount;
     private double robotSpeedSlow;
     private double robotSpeedFast;
