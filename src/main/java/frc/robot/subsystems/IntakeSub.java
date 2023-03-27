@@ -13,7 +13,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class IntakeSub extends SubsystemBase {
   public CANSparkMax intakeRaise = new CANSparkMax(22, MotorType.kBrushless);
   public CANSparkMax intakeRoll = new CANSparkMax(21, MotorType.kBrushless);
-  
+
   /** Creates a new IntakeSub. */
   public IntakeSub() {
     intakeRaise.setSmartCurrentLimit(35);

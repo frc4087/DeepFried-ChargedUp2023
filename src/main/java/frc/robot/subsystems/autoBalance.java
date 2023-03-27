@@ -9,7 +9,8 @@ import edu.wpi.first.wpilibj.BuiltInAccelerometer;
 /** Add your docs here. */
 public class autoBalance {
     private BuiltInAccelerometer mRioAccel;
-    private int state; //used to determine if the robot is driving towards the charging station, balancing itself, or waiting for the automation period to end
+    private int state; // used to determine if the robot is driving towards the charging station,
+                       // balancing itself, or waiting for the automation period to end
     private int debounceCount;
     private double robotSpeedSlow;
     private double robotSpeedFast;
@@ -49,8 +50,8 @@ public class autoBalance {
         // seconds
         // Reduces the impact of sensor noice, but too high can make the auto run
         // slower, default = 0.2
-        debounceTime = 2.25;//increase this
-        debounceTimeF= 0.1;
+        debounceTime = 2.25;// increase this
+        debounceTimeF = 0.1;
 
         // Amount of time to drive towards to scoring target when trying to bump the
         // game piece off
@@ -65,13 +66,14 @@ public class autoBalance {
         doubleTapTime = 0.3;
 
     }
-    //gets pitch based on the acceleration of the bot
+
+    // gets pitch based on the acceleration of the bot
     public double getPitch() {
         return Math.atan2((-mRioAccel.getX()),
                 Math.sqrt(mRioAccel.getY() * mRioAccel.getY() + mRioAccel.getZ() * mRioAccel.getZ())) * 57.3;
     }
-    
-    //gets roll based on the acceleration of the bot
+
+    // gets roll based on the acceleration of the bot
     public double getRoll() {
         return Math.atan2(mRioAccel.getY(), mRioAccel.getZ()) * 57.3;
     }
@@ -114,7 +116,7 @@ public class autoBalance {
                     debounceCount++;
                 }
                 if (debounceCount > secondsToTicks(debounceTime)) {
-    
+
                     state = 2;
                     debounceCount = 0;
                     return 0;
@@ -131,7 +133,7 @@ public class autoBalance {
                     return 0;
                 }
                 if (getTilt() >= levelDegree) {
-                    return -0.1; //add neg
+                    return -0.1; // add neg
                 } else if (getTilt() <= -levelDegree) {
                     return -0.1;
                 }
@@ -176,7 +178,7 @@ public class autoBalance {
                     return 0;
                 }
                 if (getTilt() >= levelDegree) {
-                    return 0.1; 
+                    return 0.1;
                 } else if (getTilt() <= -levelDegree) {
                     return -0.1;
                 }
